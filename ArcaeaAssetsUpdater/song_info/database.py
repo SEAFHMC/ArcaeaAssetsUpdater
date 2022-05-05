@@ -4,11 +4,14 @@ from song_info.schema import SongList
 import ujson as json
 
 root = RHelper()
+
+
 class Data:
     db = pw.SqliteDatabase(root.data("arcsong.db"))
-    with open (root.data("arcsong.json"), "r", encoding="UTF-8") as f:
+    with open(root.data("arcsong.json"), "r", encoding="UTF-8") as f:
         jsons = json.loads(f.read())
-        song_list = SongList(**jsons["content"])
+    song_list = SongList(**jsons["content"])
+
 
 class alias(pw.Model):
     sid = pw.IntegerField()

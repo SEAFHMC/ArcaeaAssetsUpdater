@@ -8,5 +8,6 @@ class Song(Base):
     difficulties: List[SongInfo]
     alias: Optional[List[str]]
 
+
 class SongList(Base):
     songs: List[Song]

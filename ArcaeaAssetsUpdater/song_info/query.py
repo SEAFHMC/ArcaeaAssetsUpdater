@@ -3,16 +3,16 @@ from .database import alias, charts, Data
 
 class SongAlias:
     def song_alias(song: str):
-        song_alias = alias.select().where((alias.sid ==song)|(alias.alias==song))
-        res =  [i for i in song_alias]
+        song_alias = alias.select().where((alias.sid == song) | (alias.alias == song))
+        res = [i for i in song_alias]
         if res:
             song_alias = alias.select().where(alias.sid == res[0].sid)
             return {
                 "status": 0,
                 "content": {
                     "song_id": res[0].sid,
-                    "alias": [i.alias for i in song_alias]
-                }
+                    "alias": [i.alias for i in song_alias],
+                },
             }
         else:
             return {"status": 0, "message": "invalid songname or songid"}
@@ -28,10 +28,9 @@ class SongRandom:
             )
         elif difficulty == -1:
             result = charts.select().where(
-                (charts.rating >= start * 10)
-                & (end * 10 >= charts.rating))
+                (charts.rating >= start * 10) & (end * 10 >= charts.rating)
+            )
         return [SongRandom.make_json(i) for i in result]
-
 
     def get_song_info(song_id: str, difficulty: int):
         song_list = Data.song_list

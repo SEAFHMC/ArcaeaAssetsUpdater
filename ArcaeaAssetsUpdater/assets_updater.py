@@ -16,6 +16,7 @@ from config import Config
 
 if platform == "win32":
     import asyncio
+
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
@@ -40,17 +41,35 @@ class ArcaeaAssetsUpdater:
     @staticmethod
     async def download_file(force_download: bool = False):
         async with ClientSession() as session:
-            async with session.get("https://webapi.lowiro.com/webapi/serve/static/bin/arcaea/apk",
-                                   proxy=Config.proxy, verify_ssl=False) as resp:
+            async with session.get(
+                "https://webapi.lowiro.com/webapi/serve/static/bin/arcaea/apk",
+                proxy=Config.proxy,
+                verify_ssl=False,
+            ) as resp:
                 if resp.ok:
                     j = await resp.json()
-                    if not force_download and j["value"]["version"] == ArcaeaAssetsUpdater.get_local_version_info():
+                    if (
+                        not force_download
+                        and j["value"]["version"]
+                        == ArcaeaAssetsUpdater.get_local_version_info()
+                    ):
                         return False
                     ArcaeaAssetsUpdater.mark_version_info(j)
-                    async with session.get(j["value"]["url"], proxy=Config.proxy, verify_ssl=False, timeout=None) as resp:
-                        async with async_open(path.join(ArcaeaAssetsUpdater.work_path, f"arcaea_{j['value']['version']}.apk"), 'wb') as res:
+                    async with session.get(
+                        j["value"]["url"],
+                        proxy=Config.proxy,
+                        verify_ssl=False,
+                        timeout=None,
+                    ) as resp:
+                        async with async_open(
+                            path.join(
+                                ArcaeaAssetsUpdater.work_path,
+                                f"arcaea_{j['value']['version']}.apk",
+                            ),
+                            "wb",
+                        ) as res:
                             while True:
-                                chunk = await resp.content.read(1024*1024*8)
+                                chunk = await resp.content.read(1024 * 1024 * 8)
                                 if chunk:
                                     await res.write(chunk)
                                 else:
@@ -59,8 +78,12 @@ class ArcaeaAssetsUpdater:
 
     @staticmethod
     async def unzip_file():
-        zip_file = ZipFile(path.join(
-            ArcaeaAssetsUpdater.work_path, f"arcaea_{ArcaeaAssetsUpdater.get_local_version_info()}.apk"))
+        zip_file = ZipFile(
+            path.join(
+                ArcaeaAssetsUpdater.work_path,
+                f"arcaea_{ArcaeaAssetsUpdater.get_local_version_info()}.apk",
+            )
+        )
         file_list = zip_file.namelist()
         for f in file_list:
             if f.startswith("assets"):

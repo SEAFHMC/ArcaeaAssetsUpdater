@@ -4,10 +4,9 @@ from urllib.request import pathname2url
 from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import FileResponse
 import ujson as json
-from random import choice
 from config import Config
 from assets_updater import ArcaeaAssetsUpdater
-from song_info.query import SongRandom, SongAlias
+from song_info.query import SongRandom, SongAlias, SongInfo
 
 app = FastAPI()
 songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "songs"))
@@ -80,13 +79,17 @@ async def _(image_name: str):
 
 
 @app.get("/api/song/random")
-async def _(start: float, end: float, difficulty: int = -1):
-    return choice(SongRandom.song_random(start, end, difficulty))
+async def _(start: float=0, end: float=200, difficulty: int = -1):
+    return SongRandom.song_random(start, end, difficulty)
 
 
 @app.get("/api/song/alias")
 async def _(song: str):
     return SongAlias.song_alias(song)
+
+@app.get("/api/song/info")
+async def _(songname: str, difficulty:int = -1):
+    return SongInfo.song_info(songname, difficulty)
 
 
 @app.post("/api/force_update")

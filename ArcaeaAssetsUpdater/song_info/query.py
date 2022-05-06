@@ -34,7 +34,7 @@ class SongAlias:
                 "status": 0,
                 "content": {
                     "song_id": song_id,
-                    "alias": list(alias.select().where(alias.sid == song_id)),
+                    "alias": [i.alias for i in alias.select().where(alias.sid == song_id)],
                 },
             }
         return {"status": -5, "message": "invalid songname or songid"}

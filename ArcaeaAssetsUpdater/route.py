@@ -13,6 +13,13 @@ songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "so
 char_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "char"))
 
 
+@app.get("/favicon.ico")
+async def _():
+    return FileResponse(
+        path.abspath(path.join(path.dirname(__file__), "data", "icon.ico"))
+    )
+
+
 @app.get("/assets/songs/{song_id}/{file_name}")
 async def _(song_id: str, file_name: str):
     if not path.exists(path.join(songs_dir, song_id)) and (
@@ -79,16 +86,17 @@ async def _(image_name: str):
 
 
 @app.get("/api/song/random")
-async def _(start: float=0, end: float=200, difficulty: int = -1):
+async def _(start: float = 0, end: float = 200, difficulty: int = -1):
     return SongRandom.song_random(start, end, difficulty)
 
 
 @app.get("/api/song/alias")
-async def _(song: str):
-    return SongAlias.song_alias(song)
+async def _(songname: str):
+    return SongAlias.song_alias(songname)
+
 
 @app.get("/api/song/info")
-async def _(songname: str, difficulty:int = -1):
+async def _(songname: str, difficulty: int = -1):
     return SongInfo.song_info(songname, difficulty)
 
 

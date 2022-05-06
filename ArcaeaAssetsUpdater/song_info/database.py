@@ -26,7 +26,11 @@ class charts(pw.Model):
     song_id = pw.CharField()
     rating = pw.IntegerField()
     rating_class = pw.IntegerField()
+    name_en = pw.CharField()
+    name_jp = pw.CharField()
 
     class Meta:
         database = Data.db
-        primary_key = pw.CompositeKey("song_id", "rating", "rating_class")
+        primary_key = pw.CompositeKey(
+            "song_id", "rating", "rating_class", "name_en", "name_jp"
+        )

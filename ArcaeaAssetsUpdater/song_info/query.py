@@ -59,6 +59,8 @@ class SongRandom:
     def song_random(start: float, end: float, difficulty: int = -1):
         if difficulty not in (-1, 0, 1, 2, 3):
             return {"status": -9, "message": "invalid difficulty"}
+        if start > end:
+            return {"status": -9, "message": "invalid difficulty"}
         if difficulty != -1 and difficulty:
             result = charts.select().where(
                 (charts.rating >= start * 10)

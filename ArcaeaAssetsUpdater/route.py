@@ -2,7 +2,10 @@ from os import listdir, path
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 from fastapi import FastAPI, Request, BackgroundTasks
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException
+from fastapi.encoders import jsonable_encoder
 import ujson as json
 from config import Config
 from assets_updater import ArcaeaAssetsUpdater
@@ -11,6 +14,32 @@ from song_info.query import SongRandom, SongAlias, SongInfo
 app = FastAPI()
 songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "songs"))
 char_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "char"))
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=200,
+        content=jsonable_encoder({"status": -233, "message": "internal error"}),
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=200,
+        content=jsonable_encoder({"status": -250, "content": "invalid request"}),
+    )
+
+
+@app.exception_handler(RuntimeError)
+async def fastapi_exception_handler(request: Request, exc: RuntimeError):
+    return JSONResponse(
+        status_code=200,
+        content=jsonable_encoder(
+            {"status": -403, "content": "There is nothing here, go back!"}
+        ),
+    )
 
 
 @app.get("/favicon.ico")

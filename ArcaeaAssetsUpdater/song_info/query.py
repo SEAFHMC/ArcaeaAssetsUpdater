@@ -1,3 +1,4 @@
+from exception import AUAException, error_code
 from .database import alias, charts, Data
 from random import choice
 
@@ -41,7 +42,7 @@ class SongAlias:
                     ],
                 },
             }
-        return {"status": -5, "message": "invalid songname or songid"}
+        raise AUAException(-5, error_code["-5"])
 
 
 class SongRandom:
@@ -58,9 +59,9 @@ class SongRandom:
 
     def song_random(start: float, end: float, difficulty: int = -1):
         if difficulty not in (-1, 0, 1, 2, 3):
-            return {"status": -9, "message": "invalid difficulty"}
+            raise AUAException(-9, error_code["-9"])
         if start > end:
-            return {"status": -9, "message": "invalid difficulty"}
+            raise AUAException(-22, error_code["-22"])
         if difficulty != -1 and difficulty:
             result = charts.select().where(
                 (charts.rating >= start * 10)
@@ -81,7 +82,7 @@ class SongInfo:
     def song_info(songname: str, difficulty: int = -1):
         song_alias = SongAlias.song_alias(songname)
         if song_alias["status"] != 0:
-            return {"status": -5, "message": "invalid songname or songid"}
+            raise AUAException(-5, error_code["-5"])
         song_id = song_alias["content"]["song_id"]
         if song_info := get_song_info(song_id=song_id, difficulty=difficulty):
             return {
@@ -93,4 +94,4 @@ class SongInfo:
                 },
             }
         else:
-            return {"status": -9, "message": "invalid difficulty"}
+            raise AUAException(-9, error_code["-9"])

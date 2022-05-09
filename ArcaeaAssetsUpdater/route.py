@@ -10,6 +10,7 @@ import ujson as json
 from config import Config
 from assets_updater import ArcaeaAssetsUpdater
 from song_info.query import SongRandom, SongAlias, SongInfo
+from exception import AUAException
 
 app = FastAPI()
 songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "songs"))
@@ -18,27 +19,32 @@ char_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "cha
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
-    return JSONResponse(
-        status_code=200,
-        content=jsonable_encoder({"status": -233, "message": "internal error"}),
-    )
+    return FileResponse(path.abspath(path.join(path.dirname(__file__), "song_info", "index.html")))
 
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
-        status_code=200,
-        content=jsonable_encoder({"status": -250, "content": "invalid request"}),
+        status_code=403,
+        content=jsonable_encoder({"status": 403, "content": "invalid request"}),
     )
 
 
 @app.exception_handler(RuntimeError)
 async def fastapi_exception_handler(request: Request, exc: RuntimeError):
     return JSONResponse(
-        status_code=200,
+        status_code=404,
         content=jsonable_encoder(
-            {"status": -403, "content": "There is nothing here, go back!"}
+            {"status": 404, "content": "There is nothing here, go back!"}
         ),
+    )
+
+
+@app.exception_handler(AUAException)
+async def fastapi_exception_handler(request: Request, exc: AUAException):
+    return JSONResponse(
+        status_code=200,
+        content=jsonable_encoder({"status": exc.status, "content": exc.message}),
     )
 
 

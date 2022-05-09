@@ -28,13 +28,17 @@ class SongAlias:
                     "alias": [i.alias for i in song_alias],
                 },
             }
-        elif song_alias := charts.get_or_none((charts.name_en == songname)|(charts.name_jp == songname)):
-            song_id = song_alias.song_id,
+        elif song_alias := charts.get_or_none(
+            (charts.name_en == songname) | (charts.name_jp == songname)
+        ):
+            song_id = (song_alias.song_id,)
             return {
                 "status": 0,
                 "content": {
                     "song_id": song_id,
-                    "alias": [i.alias for i in alias.select().where(alias.sid == song_id)],
+                    "alias": [
+                        i.alias for i in alias.select().where(alias.sid == song_id)
+                    ],
                 },
             }
         return {"status": -5, "message": "invalid songname or songid"}
@@ -80,7 +84,11 @@ class SongInfo:
         if song_info := get_song_info(song_id=song_id, difficulty=difficulty):
             return {
                 "status": 0,
-                "content": {"song_id": song_id, "song_info": song_info},
+                "content": {
+                    "song_id": song_id,
+                    "difficulty": difficulty,
+                    "song_info": song_info,
+                },
             }
         else:
             return {"status": -9, "message": "invalid difficulty"}

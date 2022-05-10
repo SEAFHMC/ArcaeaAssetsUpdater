@@ -26,7 +26,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
         status_code=403,
-        content=jsonable_encoder({"status": 403, "content": "invalid request"}),
+        content=jsonable_encoder({"status": 403, "message": "invalid request"}),
     )
 
 
@@ -35,7 +35,7 @@ async def fastapi_exception_handler(request: Request, exc: RuntimeError):
     return JSONResponse(
         status_code=404,
         content=jsonable_encoder(
-            {"status": 404, "content": "There is nothing here, go back!"}
+            {"status": 404, "message": "There is nothing here, go back!"}
         ),
     )
 
@@ -44,7 +44,7 @@ async def fastapi_exception_handler(request: Request, exc: RuntimeError):
 async def fastapi_exception_handler(request: Request, exc: AUAException):
     return JSONResponse(
         status_code=200,
-        content=jsonable_encoder({"status": exc.status, "content": exc.message}),
+        content=jsonable_encoder({"status": exc.status, "message": exc.message}),
     )
 
 

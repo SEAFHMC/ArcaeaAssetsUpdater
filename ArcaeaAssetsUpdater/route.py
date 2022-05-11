@@ -11,6 +11,7 @@ from config import Config
 from assets_updater import ArcaeaAssetsUpdater
 from song_info.query import SongRandom, SongAlias, SongInfo
 from exception import AUAException
+from h11._util import ProtocolError
 
 app = FastAPI()
 songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "songs"))
@@ -40,6 +41,14 @@ async def fastapi_exception_handler(request: Request, exc: RuntimeError):
         content=jsonable_encoder(
             {"status": 404, "message": "There is nothing here, go back!"}
         ),
+    )
+
+
+@app.exception_handler(ProtocolError)
+async def validation_exception_handler(request: Request, exc: ProtocolError):
+    return JSONResponse(
+        status_code=403,
+        content=jsonable_encoder({"status": 403, "message": "ProtocolError"}),
     )
 
 

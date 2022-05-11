@@ -19,7 +19,10 @@ char_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "cha
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
-    return FileResponse(path.abspath(path.join(path.dirname(__file__), "song_info", "index.html")))
+    return FileResponse(
+        path.abspath(path.join(path.dirname(__file__), "song_info", "index.html")),
+        status_code=404,
+    )
 
 
 @app.exception_handler(RequestValidationError)

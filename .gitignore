@@ -135,3 +135,6 @@ assets/
 
 #test
 test.py
+
+#cert
+*.pem

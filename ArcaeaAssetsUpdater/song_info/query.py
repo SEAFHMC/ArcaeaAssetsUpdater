@@ -32,7 +32,7 @@ class SongAlias:
         elif song_alias := charts.get_or_none(
             (charts.name_en == songname) | (charts.name_jp == songname)
         ):
-            song_id = (song_alias.song_id,)
+            song_id = song_alias.song_id
             return {
                 "status": 0,
                 "content": {

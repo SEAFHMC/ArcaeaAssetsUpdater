@@ -2,8 +2,9 @@ from os import listdir, path
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 from fastapi import FastAPI, Request, BackgroundTasks
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.exceptions import RequestValidationError
+from httpx import AsyncClient
 from starlette.exceptions import HTTPException
 from fastapi.encoders import jsonable_encoder
 import ujson as json
@@ -11,7 +12,6 @@ from config import Config
 from assets_updater import ArcaeaAssetsUpdater
 from song_info.query import SongRandom, SongAlias, SongInfo
 from exception import AUAException
-from h11._util import ProtocolError
 
 app = FastAPI()
 songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "songs"))
@@ -44,19 +44,19 @@ async def fastapi_exception_handler(request: Request, exc: RuntimeError):
     )
 
 
-@app.exception_handler(ProtocolError)
-async def validation_exception_handler(request: Request, exc: ProtocolError):
-    return JSONResponse(
-        status_code=403,
-        content=jsonable_encoder({"status": 403, "message": "ProtocolError"}),
-    )
-
-
 @app.exception_handler(AUAException)
 async def fastapi_exception_handler(request: Request, exc: AUAException):
     return JSONResponse(
         status_code=200,
         content=jsonable_encoder({"status": exc.status, "message": exc.message}),
+    )
+
+
+@app.exception_handler(Exception)
+async def validation_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=403,
+        content=jsonable_encoder({"status": 403, "message": "Unkown Error"}),
     )
 
 
@@ -169,3 +169,12 @@ async def _(request: Request, background_tasks: BackgroundTasks):
         return {"message": "Succeeded."}
     else:
         return {"message": "Access denied."}
+
+
+@app.get("/pixiv/{img_path:path}")
+async def _(request: Request, img_path: str):
+    url = f"https://i.pximg.net/{img_path}"
+    headers = {"Referer": "https://www.pixiv.net/"}
+    async with AsyncClient() as client:
+        resp = await client.get(url=url, headers=headers, timeout=100)
+    return Response(status_code=resp.status_code, content=resp.content)

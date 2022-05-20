@@ -52,14 +52,6 @@ async def fastapi_exception_handler(request: Request, exc: AUAException):
     )
 
 
-@app.exception_handler(Exception)
-async def validation_exception_handler(request: Request, exc: Exception):
-    return JSONResponse(
-        status_code=403,
-        content=jsonable_encoder({"status": 403, "message": "Unkown Error"}),
-    )
-
-
 @app.get("/favicon.ico")
 async def _():
     return FileResponse(

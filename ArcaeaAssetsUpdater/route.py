@@ -39,7 +39,7 @@ async def fastapi_exception_handler(request: Request, exc: RuntimeError):
     return JSONResponse(
         status_code=404,
         content=jsonable_encoder(
-            {"status": 404, "message": "There is nothing here, go back!"}
+            {"status": 404, "message": "Not Found"}
         ),
     )
 

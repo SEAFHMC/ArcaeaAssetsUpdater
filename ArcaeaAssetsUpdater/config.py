@@ -11,3 +11,4 @@
 class Config:
     proxy = ""
     token = "616.sb"
+    base_url = "http://127.0.0.1:17777/"

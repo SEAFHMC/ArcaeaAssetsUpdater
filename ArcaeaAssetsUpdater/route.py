@@ -38,9 +38,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 async def fastapi_exception_handler(request: Request, exc: RuntimeError):
     return JSONResponse(
         status_code=404,
-        content=jsonable_encoder(
-            {"status": 404, "message": "Not Found"}
-        ),
+        content=jsonable_encoder({"status": 404, "message": "Not Found"}),
     )
 
 
@@ -87,7 +85,7 @@ async def _(request: Request):
             if path.exists(path.join(songs_dir, song, "base.jpg")):
                 song_dict[song.replace("dl_", "")] = [
                     urljoin(
-                        str(request.base_url),
+                        Config.base_url,
                         pathname2url(
                             path.join(
                                 "assets", "songs", song.replace("dl_", ""), "base.jpg"
@@ -98,7 +96,7 @@ async def _(request: Request):
                 if path.exists(path.join(songs_dir, song, "3.jpg")):
                     song_dict[song.replace("dl_", "")].append(
                         urljoin(
-                            str(request.base_url),
+                            Config.base_url,
                             pathname2url(
                                 path.join(
                                     "assets", "songs", song.replace("dl_", ""), "3.jpg"
@@ -114,7 +112,7 @@ async def _(request: Request):
     char_list = dict()
     for char in listdir(char_dir):
         char_list[char] = urljoin(
-            str(request.base_url), pathname2url(path.join("assets", "char", char))
+            Config.base_url, pathname2url(path.join("assets", "char", char))
         )
     return char_list
 

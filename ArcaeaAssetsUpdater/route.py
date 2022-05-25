@@ -168,3 +168,11 @@ async def _(request: Request, img_path: str):
     async with AsyncClient() as client:
         resp = await client.get(url=url, headers=headers, timeout=100)
     return Response(status_code=resp.status_code, content=resp.content)
+
+
+@app.get("/404.html")
+async def _():
+    return FileResponse(
+        path.abspath(path.join(path.dirname(__file__), "song_info", "index.html")),
+        status_code=404,
+    )

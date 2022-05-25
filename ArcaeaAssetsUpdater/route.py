@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.exceptions import RequestValidationError
 from httpx import AsyncClient
-from starlette.exceptions import HTTPException
 from fastapi.encoders import jsonable_encoder
 import ujson as json
 from config import Config
@@ -16,14 +15,6 @@ from exception import AUAException
 app = FastAPI()
 songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "songs"))
 char_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "char"))
-
-
-@app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
-    return FileResponse(
-        path.abspath(path.join(path.dirname(__file__), "song_info", "index.html")),
-        status_code=404,
-    )
 
 
 @app.exception_handler(RequestValidationError)

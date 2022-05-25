@@ -1,0 +1,3 @@
+[submodule "ArcaeaAssetsUpdater/ArcDb"]
+	path = ArcaeaAssetsUpdater/ArcDb
+	url = https://github.com/Arcaea-Infinity/ArcaeaSongDatabase.git

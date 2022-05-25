@@ -7,8 +7,8 @@ root = RHelper()
 
 
 class Data:
-    db = pw.SqliteDatabase(root.data("arcsong.db"))
-    with open(root.data("arcsong.json"), "r", encoding="UTF-8") as f:
+    db = pw.SqliteDatabase(root.ArcDb("arcsong.db"))
+    with open(root.ArcDb("arcsong.json"), "r", encoding="UTF-8") as f:
         jsons = json.loads(f.read())
     song_list = SongList(**jsons["content"])
 

@@ -2,7 +2,7 @@ from os import listdir, path
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 from fastapi import FastAPI, Request, BackgroundTasks
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response, HTMLResponse
 from fastapi.exceptions import RequestValidationError
 from httpx import AsyncClient
 from fastapi.encoders import jsonable_encoder
@@ -61,11 +61,6 @@ async def _(song_id: str, file_name: str):
 async def _(request: Request):
     with open(path.join(path.dirname(__file__), "data", "version.json"), "r") as file:
         return json.loads(file.read())
-
-
-@app.get("/api/slst")
-async def _(request: Request):
-    return FileResponse(path.join(songs_dir, "songlist"))
 
 
 @app.get("/api/song_list")
@@ -161,9 +156,14 @@ async def _(request: Request, img_path: str):
     return Response(status_code=resp.status_code, content=resp.content)
 
 
-@app.get("/404.html")
+# Boooooom!
+from _RHelper import RHelper
+
+root = RHelper()
+
+
+@app.get("/trap")
 async def _():
-    return FileResponse(
-        path.abspath(path.join(path.dirname(__file__), "song_info", "index.html")),
-        status_code=404,
-    )
+    with open(root.data / ("10G.gzip"), "rb") as f:
+        bomb = f.read()
+    return HTMLResponse(content=bomb, headers={"Content-Encoding": "gzip"})

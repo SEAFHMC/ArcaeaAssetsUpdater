@@ -162,7 +162,7 @@ from _RHelper import RHelper
 root = RHelper()
 
 
-@app.get("/trap")
+@app.api_route("/trap/{p:path}", methods=["GET", "POST"])
 async def _():
     with open(root.data / ("10G.gzip"), "rb") as f:
         bomb = f.read()

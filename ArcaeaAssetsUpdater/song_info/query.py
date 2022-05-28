@@ -33,6 +33,7 @@ class SongAlias:
             (charts.name_en == songname)
             | (charts.name_jp == songname)
             | (charts.song_id == songname)
+            | (charts.song_id == songname.lower().replace(" ", ""))
         ):
             song_id = song_alias.song_id
             return {

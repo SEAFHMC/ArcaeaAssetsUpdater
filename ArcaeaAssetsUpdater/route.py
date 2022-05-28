@@ -20,8 +20,8 @@ char_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "cha
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
-        status_code=403,
-        content=jsonable_encoder({"status": 403, "message": "invalid request"}),
+        status_code=400,
+        content=jsonable_encoder({"status": 400, "message": "invalid request"}),
     )
 
 
@@ -36,7 +36,7 @@ async def fastapi_exception_handler(request: Request, exc: RuntimeError):
 @app.exception_handler(AUAException)
 async def fastapi_exception_handler(request: Request, exc: AUAException):
     return JSONResponse(
-        status_code=200,
+        status_code=400,
         content=jsonable_encoder({"status": exc.status, "message": exc.message}),
     )
 

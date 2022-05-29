@@ -15,7 +15,6 @@ from exception import AUAException
 app = FastAPI()
 songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "songs"))
 char_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "char"))
-assets_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets"))
 
 
 @app.exception_handler(RequestValidationError)
@@ -102,6 +101,11 @@ async def _(request: Request):
             Config.base_url, pathname2url(path.join("assets", "char", char))
         )
     return char_list
+
+
+@app.get("/assets/char/{image_name}")
+async def _(image_name: str):
+    return FileResponse(path.join(char_dir, image_name))
 
 
 @app.get("/api/song/random")

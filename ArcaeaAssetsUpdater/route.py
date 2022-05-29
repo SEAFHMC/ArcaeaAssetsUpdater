@@ -89,7 +89,11 @@ async def _(request: Request):
                     song_dict[song.replace("dl_", "")].append(
                         urljoin(
                             Config.base_url,
-                            pathname2url(path.join("assets", "songs", song.replace, "3.jpg")),
+                            pathname2url(
+                                path.join(
+                                    "assets", "songs", song.replace("dl_", ""), "3.jpg"
+                                )
+                            ),
                         )
                     )
     return song_dict

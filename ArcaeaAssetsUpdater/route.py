@@ -15,6 +15,7 @@ from exception import AUAException
 app = FastAPI()
 songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "songs"))
 char_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "char"))
+assets_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets"))
 
 
 @app.exception_handler(RequestValidationError)
@@ -48,13 +49,9 @@ async def _():
     )
 
 
-@app.get("/assets/songs/{song_id}/{file_name}")
-async def _(song_id: str, file_name: str):
-    if not path.exists(path.join(songs_dir, song_id)) and (
-        "dl_" + song_id in listdir(songs_dir)
-    ):
-        song_id = "".join(["dl_", song_id])
-    return FileResponse(path.join(songs_dir, song_id, file_name))
+@app.get("/assets/{file_path:path}")
+async def _(file_path: str):
+    return FileResponse(path.join(assets_dir, file_path))
 
 
 @app.get("/api/version")
@@ -69,25 +66,17 @@ async def _(request: Request):
     for song in listdir(songs_dir):
         if path.isdir(path.join(songs_dir, song)):
             if path.exists(path.join(songs_dir, song, "base.jpg")):
-                song_dict[song.replace("dl_", "")] = [
+                song_dict[song] = [
                     urljoin(
                         Config.base_url,
-                        pathname2url(
-                            path.join(
-                                "assets", "songs", song.replace("dl_", ""), "base.jpg"
-                            )
-                        ),
+                        pathname2url(path.join("assets", "songs", song, "base.jpg")),
                     )
                 ]
                 if path.exists(path.join(songs_dir, song, "3.jpg")):
-                    song_dict[song.replace("dl_", "")].append(
+                    song_dict[song].append(
                         urljoin(
                             Config.base_url,
-                            pathname2url(
-                                path.join(
-                                    "assets", "songs", song.replace("dl_", ""), "3.jpg"
-                                )
-                            ),
+                            pathname2url(path.join("assets", "songs", song, "3.jpg")),
                         )
                     )
     return song_dict
@@ -101,11 +90,6 @@ async def _(request: Request):
             Config.base_url, pathname2url(path.join("assets", "char", char))
         )
     return char_list
-
-
-@app.get("/assets/char/{image_name}")
-async def _(image_name: str):
-    return FileResponse(path.join(char_dir, image_name))
 
 
 @app.get("/api/song/random")
@@ -154,16 +138,3 @@ async def _(request: Request, img_path: str):
     async with AsyncClient() as client:
         resp = await client.get(url=url, headers=headers, timeout=100)
     return Response(status_code=resp.status_code, content=resp.content)
-
-
-# Boooooom!
-from _RHelper import RHelper
-
-root = RHelper()
-
-
-@app.api_route("/trap/{p:path}", methods=["GET", "POST"])
-async def _():
-    with open(root.data / ("10G.gzip"), "rb") as f:
-        bomb = f.read()
-    return HTMLResponse(content=bomb, headers={"Content-Encoding": "gzip"})

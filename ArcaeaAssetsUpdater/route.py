@@ -54,6 +54,15 @@ async def _(file_path: str):
     return FileResponse(path.join(assets_dir, file_path))
 
 
+@app.get("/assets/songs/{song_id}/{file_name}")
+async def _(song_id: str, file_name: str):
+    if not path.exists(path.join(songs_dir, song_id)) and (
+        "dl_" + song_id in listdir(songs_dir)
+    ):
+        song_id = "".join(["dl_", song_id])
+    return FileResponse(path.join(songs_dir, song_id, file_name))
+
+
 @app.get("/api/version")
 async def _(request: Request):
     with open(path.join(path.dirname(__file__), "data", "version.json"), "r") as file:
@@ -66,17 +75,21 @@ async def _(request: Request):
     for song in listdir(songs_dir):
         if path.isdir(path.join(songs_dir, song)):
             if path.exists(path.join(songs_dir, song, "base.jpg")):
-                song_dict[song] = [
+                song_dict[song.replace("dl_", "")] = [
                     urljoin(
                         Config.base_url,
-                        pathname2url(path.join("assets", "songs", song, "base.jpg")),
+                        pathname2url(
+                            path.join(
+                                "assets", "songs", song.replace("dl_", ""), "base.jpg"
+                            )
+                        ),
                     )
                 ]
                 if path.exists(path.join(songs_dir, song, "3.jpg")):
-                    song_dict[song].append(
+                    song_dict[song.replace("dl_", "")].append(
                         urljoin(
                             Config.base_url,
-                            pathname2url(path.join("assets", "songs", song, "3.jpg")),
+                            pathname2url(path.join("assets", "songs", song.replace, "3.jpg")),
                         )
                     )
     return song_dict

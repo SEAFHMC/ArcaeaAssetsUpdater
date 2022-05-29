@@ -30,9 +30,9 @@ class SongAlias:
                 },
             }
         elif song_alias := charts.get_or_none(
-            (charts.name_en == songname)
-            | (charts.name_jp == songname)
-            | (charts.song_id == songname.lower().replace(" ", ""))
+            (charts.name_en.startswith(songname))
+            | (charts.name_jp.startswith(songname))
+            | (charts.song_id.startswith(songname.lower().replace(" ", "")))
         ):
             song_id = song_alias.song_id
             return {

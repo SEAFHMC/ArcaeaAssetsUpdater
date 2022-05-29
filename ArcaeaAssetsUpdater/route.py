@@ -49,11 +49,6 @@ async def _():
     )
 
 
-@app.get("/assets/{file_path:path}")
-async def _(file_path: str):
-    return FileResponse(path.join(assets_dir, file_path))
-
-
 @app.get("/assets/songs/{song_id}/{file_name}")
 async def _(song_id: str, file_name: str):
     if not path.exists(path.join(songs_dir, song_id)) and (

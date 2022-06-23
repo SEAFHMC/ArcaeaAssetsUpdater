@@ -153,4 +153,4 @@ async def _(request: Request, img_path: str):
     headers = {"Referer": "https://www.pixiv.net/"}
     async with AsyncClient() as client:
         resp = await client.get(url=url, headers=headers, timeout=100)
-    return Response(status_code=resp.status_code, content=resp.content)
+    return Response(status_code=resp.status_code, content=resp.content+b'\xe5\xb0\x8f\xe7\x8c\xbf\xe5\x9c\x88')

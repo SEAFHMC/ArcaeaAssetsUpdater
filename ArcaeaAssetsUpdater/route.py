@@ -11,6 +11,7 @@ from config import Config
 from assets_updater import ArcaeaAssetsUpdater
 from song_info.query import SongRandom, SongAlias, SongInfo
 from exception import AUAException
+from re import match
 
 app = FastAPI()
 songs_dir = path.abspath(path.join(path.dirname(__file__), "data", "assets", "songs"))
@@ -68,28 +69,19 @@ async def _(request: Request):
     song_dict = dict()
     for song in listdir(songs_dir):
         if path.isdir(path.join(songs_dir, song)):
-            if path.exists(path.join(songs_dir, song, "base.jpg")):
-                song_dict[song.replace("dl_", "")] = [
-                    urljoin(
-                        Config.base_url,
-                        pathname2url(
-                            path.join(
-                                "assets", "songs", song.replace("dl_", ""), "base.jpg"
-                            )
-                        ),
-                    )
-                ]
-                if path.exists(path.join(songs_dir, song, "3.jpg")):
-                    song_dict[song.replace("dl_", "")].append(
-                        urljoin(
-                            Config.base_url,
-                            pathname2url(
-                                path.join(
-                                    "assets", "songs", song.replace("dl_", ""), "3.jpg"
-                                )
-                            ),
+            cover_list = listdir(path.join(songs_dir, song))
+            song_dict[song.replace("dl_", "")] = [
+                urljoin(
+                    Config.base_url,
+                    pathname2url(
+                        path.join(
+                            "assets", "songs", song.replace("dl_", ""), cover_name
                         )
-                    )
+                    ),
+                )
+                for cover_name in cover_list
+                if match(r"(base|[0123]).jpg", cover_name)
+            ]
     return song_dict
 
 
@@ -153,4 +145,7 @@ async def _(request: Request, img_path: str):
     headers = {"Referer": "https://www.pixiv.net/"}
     async with AsyncClient() as client:
         resp = await client.get(url=url, headers=headers, timeout=100)
-    return Response(status_code=resp.status_code, content=resp.content+b'\xe5\xb0\x8f\xe7\x8c\xbf\xe5\x9c\x88')
+    return Response(
+        status_code=resp.status_code,
+        content=resp.content,
+    )
